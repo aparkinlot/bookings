@@ -74,10 +74,28 @@
         attention.custom({
             title: 'Choose your dates',
             msg: html,
+            willOpen: () => {
+                const elem = document.getElementById("reservation-dates-modal");
+                const rp = new DateRangePicker(elem, {
+                    format: 'yyyy-mm-dd',
+                    showOnFocus: true,
+                })
+            },
+            didOpen: () => {
+                document.getElementById("start").removeAttribute("disabled");
+                document.getElementById("end").removeAttribute("disabled");
+            },
             callback: async function(result) {
-                console.log("called")
-                const response = await fetch("/search-availability-json")
+                let form = document.getElementById("check-availability-form");
+                let formData = new FormData(form);
+                formData.append("csrf_token", "{{.CSRFToken}}")
+
+                const response = await fetch("/search-availability-json", {
+                    method: "post",
+                    body: formData,
+                })
                 const data = await response.json()
+                console.log(data)
                 console.log(data.ok)
                 console.log(data.message)
             }
