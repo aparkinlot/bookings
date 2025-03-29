@@ -7,13 +7,16 @@ import (
 	"html/template"
 	"net/http"
 	"path/filepath"
+	"time"
 
 	"github.com/aparkinlot/Bookings/internal/config"
 	"github.com/aparkinlot/Bookings/internal/models"
 	"github.com/justinas/nosurf"
 )
 
-var functions = template.FuncMap{}
+var functions = template.FuncMap{
+	"readableDate": ReadableDate,
+}
 
 var app *config.AppConfig
 var pathToTemplates = "./templates"
@@ -23,11 +26,19 @@ func NewRenderer(a *config.AppConfig) {
 	app = a
 }
 
+// Returns time in YYYY-MM-DD format
+func ReadableDate(t time.Time) string {
+	return t.Format("2006-01-02")
+}
+
 func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateData {
 	td.CSRFToken = nosurf.Token(r)
 	td.Flash = app.Session.PopString(r.Context(), "flash")
 	td.Warning = app.Session.PopString(r.Context(), "warning")
 	td.Error = app.Session.PopString(r.Context(), "error")
+	if app.Session.Exists(r.Context(), "user_id") {
+		td.IsAuthenticated = 1
+	}
 	return td
 }
 
