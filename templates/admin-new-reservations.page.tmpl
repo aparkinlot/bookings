@@ -27,8 +27,9 @@
                     <tr>
                         <td>{{.ID}}</td>
                         <td>
-                            <a href="/admin/reservations/new/{{.ID}}">
-                            {{.LastName}}
+                            <a href="/admin/reservations/new/{{.ID}}/show">
+                                {{.LastName}}
+                            </a>
                         </td>
                         <td>{{.Room.RoomName}}</td>
                         <td>{{readableDate .StartDate}}</td>
